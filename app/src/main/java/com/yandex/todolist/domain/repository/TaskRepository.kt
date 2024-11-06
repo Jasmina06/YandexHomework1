@@ -1,6 +1,7 @@
+// TaskRepository.kt
 package com.yandex.todolist.domain.repository
 
-import com.yandex.todolist.data.model.Task
+import com.yandex.todolist.domain.model.Task
 import kotlinx.coroutines.flow.Flow
 
 interface TaskRepository {

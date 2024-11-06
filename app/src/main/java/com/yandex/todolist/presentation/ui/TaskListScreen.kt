@@ -19,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.yandex.todolist.R
-import com.yandex.todolist.data.model.Task
+import com.yandex.todolist.domain.model.Task
 import com.yandex.todolist.presentation.viewmodel.TaskViewModel
 import java.time.LocalDate
 
@@ -38,6 +38,7 @@ fun TaskListScreen(viewModel: TaskViewModel) {
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
+            // Header with title and visibility toggle button
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -57,20 +58,23 @@ fun TaskListScreen(viewModel: TaskViewModel) {
                     )
                 }
             }
+
+            // Display completed tasks count
             Text(
                 text = stringResource(id = R.string.completed_tasks, completedTasksCount),
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
+            // Task list
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(filteredTasks, key = { it.id ?: 0 }) { task -> // Устанавливаем значение по умолчанию для nullable `id`
+                items(filteredTasks, key = { it.id }) { task ->
                     TaskItem(
                         task = task,
                         onCheckedChange = { isChecked ->
                             viewModel.updateTask(task.copy(isDone = isChecked))
                         },
-                        onDelete = { task.id?.let { viewModel.deleteTask(it) } }, // Проверка `id` на null перед передачей
+                        onDelete = { viewModel.deleteTask(task.id) },
                         onEdit = {
                             taskToEdit = it
                             showTaskEditor = true
@@ -80,6 +84,7 @@ fun TaskListScreen(viewModel: TaskViewModel) {
             }
         }
 
+        // Floating Action Button for adding new tasks
         FloatingActionButton(
             onClick = {
                 taskToEdit = null
@@ -94,12 +99,13 @@ fun TaskListScreen(viewModel: TaskViewModel) {
         }
     }
 
+    // Task editor dialog
     if (showTaskEditor) {
         TaskEditorDialog(
             task = taskToEdit,
             onDismiss = { showTaskEditor = false },
             onSave = { task ->
-                if (task.id == null) {
+                if (task.id == 0) { // Assuming id = 0 for new tasks
                     viewModel.addTask(task.copy(id = tasks.size + 1))
                 } else {
                     viewModel.updateTask(task)
@@ -119,7 +125,7 @@ fun TaskEditorDialog(
     var description by remember { mutableStateOf(task?.description ?: "") }
     var importance by remember { mutableStateOf(task?.importance ?: "Нет") }
     var deadlineEnabled by remember { mutableStateOf(task?.deadline != null) }
-    var deadline by remember { mutableStateOf(task?.deadline ?: LocalDate.now()) }
+    val deadline by remember { mutableStateOf(task?.deadline ?: LocalDate.now()) }
     var importanceExpanded by remember { mutableStateOf(false) }
 
     Dialog(onDismissRequest = onDismiss) {
@@ -138,6 +144,7 @@ fun TaskEditorDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Task description input
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
@@ -147,6 +154,7 @@ fun TaskEditorDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Importance dropdown
                 Text(text = stringResource(R.string.importance))
                 Box {
                     OutlinedButton(
@@ -174,6 +182,7 @@ fun TaskEditorDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Deadline switch and date button
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = stringResource(R.string.deadline))
                     Spacer(modifier = Modifier.width(8.dp))
@@ -182,7 +191,7 @@ fun TaskEditorDialog(
 
                 if (deadlineEnabled) {
                     Button(onClick = {
-                        // Логика показа диалога выбора даты
+                        // Date selection logic
                     }) {
                         Text(deadline.toString())
                     }
@@ -190,6 +199,7 @@ fun TaskEditorDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Save and Cancel buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -200,10 +210,11 @@ fun TaskEditorDialog(
                     TextButton(onClick = {
                         onSave(
                             Task(
-                                id = task?.id ?: 0,  // Устанавливаем значение по умолчанию, если `id` равно `null`
+                                id = task?.id ?: 0,
                                 description = description,
                                 importance = importance,
-                                deadline = if (deadlineEnabled) deadline else null
+                                deadline = if (deadlineEnabled) deadline else null,
+                                isDone = task?.isDone ?: false
                             )
                         )
                     }) {
@@ -247,7 +258,7 @@ fun TaskItem(task: Task, onCheckedChange: (Boolean) -> Unit, onDelete: () -> Uni
         ) {
             Checkbox(
                 checked = task.isDone,
-                onCheckedChange = onCheckedChange,
+                onCheckedChange = { onCheckedChange(it) },
                 colors = CheckboxDefaults.colors(
                     checkedColor = MaterialTheme.colorScheme.secondary,
                     uncheckedColor = MaterialTheme.colorScheme.onBackground

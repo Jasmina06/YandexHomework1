@@ -1,24 +1,29 @@
-// data/repository/TaskRepositoryImpl.kt
+// TaskRepositoryImpl.kt
 package com.yandex.todolist.data.repository
 
-
-import com.yandex.todolist.data.model.Task
+import com.yandex.todolist.data.model.Task as DataTask
+import com.yandex.todolist.data.mappers.toDataModel
+import com.yandex.todolist.data.mappers.toDomainModel
+import com.yandex.todolist.domain.model.Task as DomainTask
 import com.yandex.todolist.domain.repository.TaskRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 
 class TaskRepositoryImpl : TaskRepository {
-    private val tasks = MutableStateFlow<List<Task>>(emptyList())
+    private val tasks = MutableStateFlow<List<DataTask>>(emptyList())
 
-    override fun getTasks(): Flow<List<Task>> = tasks
-
-    override suspend fun addTask(task: Task) {
-        tasks.value += task
+    override fun getTasks(): Flow<List<DomainTask>> {
+        return tasks.map { list -> list.map { it.toDomainModel() } }
     }
 
-    override suspend fun updateTask(task: Task) {
+    override suspend fun addTask(task: DomainTask) {
+        tasks.value += task.toDataModel()
+    }
+
+    override suspend fun updateTask(task: DomainTask) {
         tasks.value = tasks.value.map {
-            if (it.id == task.id) task else it
+            if (it.id == task.id) task.toDataModel() else it
         }
     }
 

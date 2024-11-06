@@ -1,4 +1,3 @@
-// MainActivity.kt
 package com.yandex.todolist
 
 import android.os.Bundle
@@ -21,16 +20,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Создайте экземпляр TaskRepository
         val taskRepository = TaskRepositoryImpl()
-
-        // Передайте taskRepository в use cases
         val getTasksUseCase = GetTasksUseCase(taskRepository)
         val addTaskUseCase = AddTaskUseCase(taskRepository)
         val updateTaskUseCase = UpdateTaskUseCase(taskRepository)
         val deleteTaskUseCase = DeleteTaskUseCase(taskRepository)
 
-        // Создайте фабрику ViewModel
         val factory = TaskViewModelFactory(
             getTasksUseCase,
             addTaskUseCase,
@@ -38,7 +33,6 @@ class MainActivity : ComponentActivity() {
             deleteTaskUseCase
         )
 
-        // Используйте фабрику для создания ViewModel
         viewModel = ViewModelProvider(this, factory).get(TaskViewModel::class.java)
 
         setContent {
