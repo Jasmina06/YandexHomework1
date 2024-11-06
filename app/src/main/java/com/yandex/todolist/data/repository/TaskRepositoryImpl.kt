@@ -1,4 +1,3 @@
-// TaskRepositoryImpl.kt
 package com.yandex.todolist.data.repository
 
 import com.yandex.todolist.data.model.Task as DataTask
@@ -18,12 +17,12 @@ class TaskRepositoryImpl : TaskRepository {
     }
 
     override suspend fun addTask(task: DomainTask) {
-        tasks.value += task.toDataModel()
+        tasks.value = tasks.value + task.toDataModel()
     }
 
     override suspend fun updateTask(task: DomainTask) {
-        tasks.value = tasks.value.map {
-            if (it.id == task.id) task.toDataModel() else it
+        tasks.value = tasks.value.map { existingTask ->
+            if (existingTask.id == task.id) task.toDataModel() else existingTask
         }
     }
 

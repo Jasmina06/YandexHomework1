@@ -3,35 +3,23 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.dp
 import com.yandex.todolist.presentation.ui.theme.Typography
+import androidx.compose.ui.unit.dp
 
-// Определяем цветовые схемы для темной и светлой тем
+// Настраиваем тёмную цветовую палитру
 private val DarkColorPalette = darkColorScheme(
-    primary = DarkPrimaryLabel,
-    secondary = DarkGreen,
-    tertiary = DarkBlue,
-    background = DarkPrimaryBackground,
-    surface = DarkElevatedBackground,
-    onPrimary = DarkWhite,
-    onSecondary = DarkWhite,
-    onBackground = DarkPrimaryLabel,
-    onSurface = DarkSecondaryLabel
+    primary = DarkPrimaryLabel,           // Основной цвет текста
+    secondary = DarkGreen,                // Второстепенный цвет, например, для иконок или выделений
+    tertiary = DarkBlue,                  // Дополнительный цвет, если нужен
+    background = DarkPrimaryBackground,   // Цвет фона приложения
+    surface = DarkSecondaryBackground,    // Цвет поверхности (например, карточек или контейнеров)
+    onPrimary = DarkWhite,                // Цвет текста на первичном фоне
+    onSecondary = DarkWhite,              // Цвет текста на вторичном фоне
+    onBackground = DarkPrimaryLabel,      // Цвет текста на фоне
+    onSurface = DarkSecondaryLabel        // Цвет текста на элементах интерфейса
 )
 
-private val LightColorPalette = lightColorScheme(
-    primary = LightPrimaryLabel,
-    secondary = LightGreen,
-    tertiary = LightBlue,
-    background = LightPrimaryBackground,
-    surface = LightElevatedBackground,
-    onPrimary = LightPrimaryLabel,
-    onSecondary = LightPrimaryLabel,
-    onBackground = LightPrimaryLabel,
-    onSurface = LightSecondaryLabel
-)
-
-// Определяем пользовательские формы, если необходимо
+// Определяем формы для элементов интерфейса
 private val AppShapes = Shapes(
     small = RoundedCornerShape(4.dp),
     medium = RoundedCornerShape(8.dp),
@@ -43,11 +31,11 @@ fun ToDoAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colorScheme = if (darkTheme) DarkColorPalette else LightColorPalette
+    val colorScheme = if (darkTheme) DarkColorPalette else lightColorScheme()
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,  // Убедитесь, что com.yandex.todolist.presentation.ui.theme.getTypography определен корректно
+        typography = Typography,
         shapes = AppShapes,
         content = content
     )

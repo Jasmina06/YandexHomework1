@@ -1,13 +1,9 @@
-// TaskViewModel.kt
 package com.yandex.todolist.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yandex.todolist.domain.model.Task
-import com.yandex.todolist.domain.usecase.AddTaskUseCase
-import com.yandex.todolist.domain.usecase.DeleteTaskUseCase
-import com.yandex.todolist.domain.usecase.GetTasksUseCase
-import com.yandex.todolist.domain.usecase.UpdateTaskUseCase
+import com.yandex.todolist.domain.usecase.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -23,7 +19,7 @@ class TaskViewModel(
     val tasks: StateFlow<List<Task>> = _tasks
 
     init {
-        fetchTasks() // Инициализация получения задач
+        fetchTasks()
     }
 
     private fun fetchTasks() {
@@ -37,21 +33,23 @@ class TaskViewModel(
     fun addTask(task: Task) {
         viewModelScope.launch {
             addTaskUseCase(task)
-            fetchTasks() // Обновляем список задач
+            _tasks.value = _tasks.value + task
         }
     }
 
     fun updateTask(task: Task) {
         viewModelScope.launch {
             updateTaskUseCase(task)
-            fetchTasks() // Обновляем список задач
+            _tasks.value = _tasks.value.map {
+                if (it.id == task.id) task else it
+            }
         }
     }
 
     fun deleteTask(taskId: Int) {
         viewModelScope.launch {
             deleteTaskUseCase(taskId)
-            fetchTasks() // Обновляем список задач
+            _tasks.value = _tasks.value.filterNot { it.id == taskId }
         }
     }
 }

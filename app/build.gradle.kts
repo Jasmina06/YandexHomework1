@@ -52,13 +52,19 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
+
     // Jetpack Compose Dependencies
     implementation(libs.androidx.ui)
+
+    implementation ("androidx.compose.material3:material3:1.3.1")
+    implementation ("androidx.compose.ui:ui:1.7.2")
     implementation(libs.androidx.material3)
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation(libs.androidx.navigation.compose)
     implementation("androidx.compose.material:material-icons-extended:1.7.5") // Убедитесь, что версия соответствует вашей версии Compose
+    implementation("androidx.compose.foundation:foundation:1.7.5")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.7.5")
 
 
     // Уберите эту строку, если она не нужна:

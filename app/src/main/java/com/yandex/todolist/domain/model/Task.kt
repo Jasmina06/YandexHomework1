@@ -1,12 +1,13 @@
-// com/yandex/todolist/domain/model/Task.kt
+// Task.kt
 package com.yandex.todolist.domain.model
 
 import java.time.LocalDate
 
+// Модель задачи
 data class Task(
-    val id: Int,
-    val description: String,
-    val importance: String = "None",  // Default value, if needed
-    val deadline: LocalDate? = null,   // Deadline is optional and can be null
-    val isDone: Boolean = false
+    val id: Int,                           // Уникальный идентификатор задачи
+    val description: String,               // Описание задачи
+    val importance: Importance = Importance.NONE,  // Уровень важности
+    val deadline: LocalDate? = null,       // Крайний срок выполнения
+    val isDone: Boolean = false            // Статус выполнения задачи
 )

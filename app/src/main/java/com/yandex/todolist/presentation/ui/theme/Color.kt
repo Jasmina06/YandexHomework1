@@ -1,36 +1,23 @@
 // Colors.kt
 import androidx.compose.ui.graphics.Color
 
-// Dark Theme Colors
-val DarkSeparator = Color(0x33FFFFFF)
-val DarkOverlay = Color(0x52000000)
-val DarkPrimaryLabel = Color(0xFFFFFFFF)
-val DarkSecondaryLabel = Color(0x99FFFFFF)
-val DarkTertiaryLabel = Color(0x66FFFFFF)
-val DarkDisabledLabel = Color(0x26FFFFFF)
-val DarkRed = Color(0xFFFF453A)
-val DarkGreen = Color(0xFF32D74B)
-val DarkBlue = Color(0xFF0A84FF)
-val DarkGray = Color(0xFF8E8E93)
-val DarkGrayLight = Color(0xFF48484A)
-val DarkPrimaryBackground = Color(0xFF161618)
-val DarkSecondaryBackground = Color(0xFF252528)
-val DarkElevatedBackground = Color(0xFF3C3C3F)
-val DarkWhite = Color(0xFFFFFFFF)
+// Темные цвета для темы, приближенные к дизайну Figma
+val DarkPrimaryLabel = Color(0xFFE0E0E0)               // Светло-серый для основного текста
+val DarkSecondaryLabel = Color(0xFFB0B0B0)             // Более темный серый для второстепенного текста
+val DarkGreen = Color(0xFF4CAF50)                      // Мягкий зеленый для успеха
+val DarkBlue = Color(0xFF64B5F6)                       // Мягкий синий для акцентов (например, иконки)
+val DarkRed = Color(0xFFEF5350)                        // Мягкий красный для ошибок и предупреждений
+val DarkPrimaryBackground = Color(0xFF121212)          // Глубокий черный цвет для основного фона
+val DarkSecondaryBackground = Color(0xFF1E1E1E)        // Темно-серый для карточек и контейнеров
+val DarkElevatedBackground = Color(0xFF2A2A2A)         // Чуть более светлый фон для поднятых элементов
+val DarkWhite = Color(0xFFFFFFFF)                      // Белый цвет для текста и иконок на темном фоне
 
-// Light Theme Colors
-val LightSeparator = Color(0x33000000)
-val LightOverlay = Color(0x80000000)
+// Светлые цвета остаются без изменений
 val LightPrimaryLabel = Color(0xFF000000)
-val LightSecondaryLabel = Color(0x99000000)
-val LightTertiaryLabel = Color(0x4D000000)
-val LightDisabledLabel = Color(0x26000000)
-val LightRed = Color(0xFFFF3B30)
 val LightGreen = Color(0xFF34C759)
 val LightBlue = Color(0xFF007AFF)
-val LightGray = Color(0xFF8E8E93)
-val LightGrayLight = Color(0xFFD1D1D6)
 val LightPrimaryBackground = Color(0xFFF7F6F2)
 val LightSecondaryBackground = Color(0xFFFFFFFF)
 val LightElevatedBackground = Color(0xFFFFFFFF)
+val LightRed = Color(0xFFFF3B30)
 val LightWhite = Color(0xFFFFFFFF)

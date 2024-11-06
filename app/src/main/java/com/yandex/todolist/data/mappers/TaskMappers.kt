@@ -7,6 +7,8 @@ fun DataTask.toDomainModel(): DomainTask {
     return DomainTask(
         id = this.id,
         description = this.description,
+        importance = this.importance,
+        deadline = this.deadline,
         isDone = this.isDone
     )
 }
@@ -15,6 +17,8 @@ fun DomainTask.toDataModel(): DataTask {
     return DataTask(
         id = this.id,
         description = this.description,
+        importance = this.importance,
+        deadline = this.deadline,
         isDone = this.isDone
     )
 }
