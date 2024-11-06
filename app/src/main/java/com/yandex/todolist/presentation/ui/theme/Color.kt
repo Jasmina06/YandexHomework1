@@ -1,0 +1,36 @@
+// Colors.kt
+import androidx.compose.ui.graphics.Color
+
+// Dark Theme Colors
+val DarkSeparator = Color(0x33FFFFFF)
+val DarkOverlay = Color(0x52000000)
+val DarkPrimaryLabel = Color(0xFFFFFFFF)
+val DarkSecondaryLabel = Color(0x99FFFFFF)
+val DarkTertiaryLabel = Color(0x66FFFFFF)
+val DarkDisabledLabel = Color(0x26FFFFFF)
+val DarkRed = Color(0xFFFF453A)
+val DarkGreen = Color(0xFF32D74B)
+val DarkBlue = Color(0xFF0A84FF)
+val DarkGray = Color(0xFF8E8E93)
+val DarkGrayLight = Color(0xFF48484A)
+val DarkPrimaryBackground = Color(0xFF161618)
+val DarkSecondaryBackground = Color(0xFF252528)
+val DarkElevatedBackground = Color(0xFF3C3C3F)
+val DarkWhite = Color(0xFFFFFFFF)
+
+// Light Theme Colors
+val LightSeparator = Color(0x33000000)
+val LightOverlay = Color(0x80000000)
+val LightPrimaryLabel = Color(0xFF000000)
+val LightSecondaryLabel = Color(0x99000000)
+val LightTertiaryLabel = Color(0x4D000000)
+val LightDisabledLabel = Color(0x26000000)
+val LightRed = Color(0xFFFF3B30)
+val LightGreen = Color(0xFF34C759)
+val LightBlue = Color(0xFF007AFF)
+val LightGray = Color(0xFF8E8E93)
+val LightGrayLight = Color(0xFFD1D1D6)
+val LightPrimaryBackground = Color(0xFFF7F6F2)
+val LightSecondaryBackground = Color(0xFFFFFFFF)
+val LightElevatedBackground = Color(0xFFFFFFFF)
+val LightWhite = Color(0xFFFFFFFF)
