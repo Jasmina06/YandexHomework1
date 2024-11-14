@@ -1,32 +1,65 @@
+// data/repository/TaskRepositoryImpl.kt
 package com.yandex.todolist.data.repository
 
-import com.yandex.todolist.data.model.Task as DataTask
-import com.yandex.todolist.data.mappers.toDataModel
+import com.yandex.todolist.data.local.TaskDao
 import com.yandex.todolist.data.mappers.toDomainModel
-import com.yandex.todolist.domain.model.Task as DomainTask
+import com.yandex.todolist.data.mappers.toEntity
+import com.yandex.todolist.data.mappers.toRequestModel
+import com.yandex.todolist.data.network.ApiService
+import com.yandex.todolist.domain.model.Task
 import com.yandex.todolist.domain.repository.TaskRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
+import java.io.IOException
 
-class TaskRepositoryImpl : TaskRepository {
-    private val tasks = MutableStateFlow<List<DataTask>>(emptyList())
+class TaskRepositoryImpl(
+    private val apiService: ApiService,
+    private val taskDao: TaskDao
+) : TaskRepository {
 
-    override fun getTasks(): Flow<List<DomainTask>> {
-        return tasks.map { list -> list.map { it.toDomainModel() } }
+    private var revision: Int = 0
+
+    override fun getTasks(): Flow<List<Task>> = flow {
+        try {
+            val tasksFromApi = apiService.getTasks().map { it.toDomainModel() }
+            revision += 1
+            taskDao.clearAllTasks()
+            tasksFromApi.forEach { task -> taskDao.insertTask(task.toEntity()) }
+            emit(tasksFromApi)
+        } catch (e: Exception) {
+            emitAll(taskDao.getAllTasks().map { it.map { entity -> entity.toDomainModel() } })
+            throw e
+        }
+    }.retry(3) { delay(2000); true }
+        .catch { emitAll(taskDao.getAllTasks().map { it.map { entity -> entity.toDomainModel() } }) }
+
+    override suspend fun addTask(task: Task) {
+        try {
+            val response = apiService.addTask(task.toRequestModel())
+            taskDao.insertTask(response.toDomainModel().toEntity())
+            revision += 1
+        } catch (e: Exception) {
+            throw IOException("Ошибка при добавлении задачи")
+        }
     }
 
-    override suspend fun addTask(task: DomainTask) {
-        tasks.value = tasks.value + task.toDataModel()
-    }
-
-    override suspend fun updateTask(task: DomainTask) {
-        tasks.value = tasks.value.map { existingTask ->
-            if (existingTask.id == task.id) task.toDataModel() else existingTask
+    override suspend fun updateTask(task: Task) {
+        try {
+            apiService.updateTasks(revision = revision, tasks = listOf(task.toRequestModel()))
+            taskDao.updateTask(task.toEntity())
+            revision += 1
+        } catch (e: Exception) {
+            throw IOException("Ошибка при обновлении задачи")
         }
     }
 
     override suspend fun deleteTask(taskId: Int) {
-        tasks.value = tasks.value.filter { it.id != taskId }
+        try {
+            apiService.deleteTask(taskId)
+            taskDao.deleteTask(taskId)
+            revision += 1
+        } catch (e: Exception) {
+            throw IOException("Ошибка при удалении задачи")
+        }
     }
 }

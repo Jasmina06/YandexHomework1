@@ -1,5 +1,6 @@
 import android.app.DatePickerDialog
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -50,22 +51,19 @@ fun TaskEditorScreen(
                             deadline = if (deadlineEnabled) deadline else null,
                             isDone = task?.isDone ?: false
                         )
+
                         if (taskId == null) {
                             viewModel.addTask(newTask)
+                            Log.d("TaskEditorScreen", "New task added: $newTask")
                         } else {
                             viewModel.updateTask(newTask)
+                            Log.d("TaskEditorScreen", "Task updated: $newTask")
                         }
                         onSave()
                     }) {
                         Text(text = "Сохранить", color = MaterialTheme.colorScheme.primary)
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
-                    actionIconContentColor = MaterialTheme.colorScheme.primary
-                )
+                }
             )
         },
         content = { paddingValues ->
@@ -74,7 +72,6 @@ fun TaskEditorScreen(
                     .padding(paddingValues)
                     .padding(16.dp)
             ) {
-                // Поле для ввода описания задачи
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
@@ -84,24 +81,14 @@ fun TaskEditorScreen(
                         .padding(bottom = 16.dp)
                 )
 
-                // Выпадающее меню для выбора важности
-                Text(
-                    text = "Важность",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                ) {
+                Text(text = "Важность", color = MaterialTheme.colorScheme.primary)
+                Box(modifier = Modifier.fillMaxWidth()) {
                     OutlinedButton(
                         onClick = { importanceExpanded = !importanceExpanded },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(text = importance.displayName)
                     }
-
                     DropdownMenu(
                         expanded = importanceExpanded,
                         onDismissRequest = { importanceExpanded = false }
@@ -120,16 +107,11 @@ fun TaskEditorScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Переключатель для активации и выбора даты
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(
-                        text = "Крайний срок",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    Text(text = "Крайний срок", color = MaterialTheme.colorScheme.primary)
                     Spacer(modifier = Modifier.weight(1f))
                     Switch(
                         checked = deadlineEnabled,
@@ -154,7 +136,6 @@ fun TaskEditorScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Кнопка для удаления задачи, если она существует
                 TextButton(
                     onClick = {
                         if (task != null) {
@@ -172,18 +153,15 @@ fun TaskEditorScreen(
     )
 }
 
-// Функция для отображения диалога выбора даты
 fun showDatePickerDialog(context: Context, onDateSelected: (LocalDate) -> Unit) {
     val calendar = Calendar.getInstance()
-    val datePickerDialog = DatePickerDialog(
+    DatePickerDialog(
         context,
         { _, year, month, dayOfMonth ->
-            val selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
-            onDateSelected(selectedDate)
+            onDateSelected(LocalDate.of(year, month + 1, dayOfMonth))
         },
         calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH)
-    )
-    datePickerDialog.show()
+    ).show()
 }
