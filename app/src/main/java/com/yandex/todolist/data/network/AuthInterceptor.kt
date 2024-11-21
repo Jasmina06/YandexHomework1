@@ -1,4 +1,3 @@
-// data/network/AuthInterceptor.kt
 package com.yandex.todolist.data.network
 
 import okhttp3.Interceptor
@@ -9,7 +8,7 @@ class AuthInterceptor(private val tokenProvider: DefaultTokenProvider) : Interce
         val originalRequest = chain.request()
         val token = tokenProvider.getToken()
 
-        // Если токен есть, добавляем его в заголовок
+
         val request = if (token != null) {
             originalRequest.newBuilder()
                 .header("Authorization", "Bearer $token")

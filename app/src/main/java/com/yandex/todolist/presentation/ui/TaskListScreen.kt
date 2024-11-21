@@ -19,6 +19,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.yandex.todolist.R
@@ -33,22 +35,17 @@ fun TaskListScreen(
     onAddTask: () -> Unit,
     onEditTask: (Task) -> Unit
 ) {
-    val tasks by viewModel.tasks.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
-    var showCompleted by remember { mutableStateOf(true) }
-    val completedTasksCount = tasks.count { it.isDone }
-    val filteredTasks = tasks.filter { !it.isDone || showCompleted }
+    val lifecycleOwner = LocalLifecycleOwner.current
     val snackbarHostState = remember { SnackbarHostState() }
+    var showCompleted by remember { mutableStateOf(true) }
 
-    // Получаем строки из stringResource заранее
-    val errorMessage = stringResource(R.string.error_message)
-    val retryLabel = stringResource(R.string.retry)
-    val myTasksTitle = stringResource(id = R.string.my_tasks)
-    val newTaskLabel = stringResource(id = R.string.new_task)
-    val addTaskDescription = stringResource(id = R.string.add_task)
 
-    // Логируем отфильтрованные задачи
-    Log.d("TaskListScreen", "Showing tasks: ${filteredTasks.size} (completed shown: $showCompleted)")
+    val tasks by viewModel.tasks.collectAsStateWithLifecycle(lifecycleOwner.lifecycle)
+    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle(lifecycleOwner.lifecycle)
+    val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle(lifecycleOwner.lifecycle)
+
+    val filteredTasks = tasks.filter { !it.isDone || showCompleted }
+    val completedTasksCount = tasks.count { it.isDone }
 
     Box(
         modifier = Modifier
@@ -68,7 +65,7 @@ fun TaskListScreen(
                     .padding(bottom = 16.dp)
             ) {
                 Text(
-                    text = myTasksTitle,
+                    text = stringResource(id = R.string.my_tasks),
                     style = MaterialTheme.typography.displayLarge.copy(
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold
@@ -78,7 +75,6 @@ fun TaskListScreen(
                 )
                 IconButton(onClick = {
                     showCompleted = !showCompleted
-                    Log.d("TaskListScreen", "Show completed toggled: $showCompleted")
                 }) {
                     Icon(
                         imageVector = if (showCompleted) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
@@ -98,28 +94,23 @@ fun TaskListScreen(
             )
 
             SwipeRefresh(
-                state = rememberSwipeRefreshState(isRefreshing = viewModel.isRefreshing.collectAsState().value),
-                onRefresh = {
-                    Log.d("TaskListScreen", "Refreshing tasks")
-                    viewModel.refreshTasks()
-                }
+                state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
+                onRefresh = { viewModel.refreshTasks() }
             ) {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    items(filteredTasks, key = { it.id }) { task ->
+                    items(filteredTasks, key = { task -> task.id }) { task ->
                         TaskItem(
                             task = task,
                             onCheckedChange = { isChecked ->
-                                Log.d("TaskListScreen", "Task ${task.id} checked changed to $isChecked")
                                 viewModel.updateTask(task.copy(isDone = isChecked))
                             },
                             onDelete = {
-                                Log.d("TaskListScreen", "Task ${task.id} deleted")
                                 viewModel.deleteTask(task.id)
                             },
-                            onEdit = { onEditTask(task) }
+                            onEdit = onEditTask
                         )
                     }
 
@@ -134,7 +125,7 @@ fun TaskListScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = newTaskLabel,
+                                text = stringResource(id = R.string.new_task),
                                 color = MaterialTheme.colorScheme.primary,
                                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
                             )
@@ -145,10 +136,7 @@ fun TaskListScreen(
         }
 
         FloatingActionButton(
-            onClick = {
-                Log.d("TaskListScreen", "FloatingActionButton clicked")
-                onAddTask()
-            },
+            onClick = onAddTask,
             shape = MaterialTheme.shapes.large,
             containerColor = MaterialTheme.colorScheme.primary,
             modifier = Modifier
@@ -156,24 +144,12 @@ fun TaskListScreen(
                 .padding(16.dp),
             contentColor = Color.White
         ) {
-            Icon(Icons.Filled.Add, contentDescription = addTaskDescription)
+            Icon(Icons.Filled.Add, contentDescription = stringResource(id = R.string.add_task))
         }
 
-        LaunchedEffect(Unit) {
-            viewModel.errorMessage.collect { error ->
-                if (error != null) {
-                    Log.e("TaskListScreen", "Error message received: $error")
-                    coroutineScope.launch {
-                        val result = snackbarHostState.showSnackbar(
-                            message = errorMessage,
-                            actionLabel = retryLabel
-                        )
-                        if (result == SnackbarResult.ActionPerformed) {
-                            Log.d("TaskListScreen", "Retry action performed")
-                            viewModel.refreshTasks()
-                        }
-                    }
-                }
+        LaunchedEffect(errorMessage) {
+            errorMessage?.let {
+                snackbarHostState.showSnackbar(it)
             }
         }
 

@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-kapt")
+    id("io.gitlab.arturbosch.detekt") version "1.23.7"
 }
 
 android {

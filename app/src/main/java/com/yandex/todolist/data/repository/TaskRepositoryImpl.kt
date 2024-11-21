@@ -1,42 +1,41 @@
-// data/repository/TaskRepositoryImpl.kt
 package com.yandex.todolist.data.repository
 
-import com.yandex.todolist.data.local.TaskDao
-import com.yandex.todolist.data.mappers.toDomainModel
-import com.yandex.todolist.data.mappers.toEntity
-import com.yandex.todolist.data.mappers.toRequestModel
-import com.yandex.todolist.data.network.ApiService
+import com.yandex.todolist.data.datasource.TaskLocalDataSource
+import com.yandex.todolist.data.datasource.TaskRemoteDataSource
 import com.yandex.todolist.domain.model.Task
 import com.yandex.todolist.domain.repository.TaskRepository
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.retry
 import java.io.IOException
 
 class TaskRepositoryImpl(
-    private val apiService: ApiService,
-    private val taskDao: TaskDao
+    private val remoteDataSource: TaskRemoteDataSource,
+    private val localDataSource: TaskLocalDataSource
 ) : TaskRepository {
 
     private var revision: Int = 0
 
     override fun getTasks(): Flow<List<Task>> = flow {
         try {
-            val tasksFromApi = apiService.getTasks().map { it.toDomainModel() }
+            val tasksFromApi = remoteDataSource.fetchTasks()
             revision += 1
-            taskDao.clearAllTasks()
-            tasksFromApi.forEach { task -> taskDao.insertTask(task.toEntity()) }
+            localDataSource.saveTasks(tasksFromApi)
             emit(tasksFromApi)
         } catch (e: Exception) {
-            emitAll(taskDao.getAllTasks().map { it.map { entity -> entity.toDomainModel() } })
+            emitAll(localDataSource.getAllTasks())
             throw e
         }
     }.retry(3) { delay(2000); true }
-        .catch { emitAll(taskDao.getAllTasks().map { it.map { entity -> entity.toDomainModel() } }) }
+        .catch { emitAll(localDataSource.getAllTasks()) }
 
     override suspend fun addTask(task: Task) {
         try {
-            val response = apiService.addTask(task.toRequestModel())
-            taskDao.insertTask(response.toDomainModel().toEntity())
+            val addedTask = remoteDataSource.addTask(task)
+            localDataSource.addTask(addedTask)
             revision += 1
         } catch (e: Exception) {
             throw IOException("Ошибка при добавлении задачи")
@@ -45,8 +44,8 @@ class TaskRepositoryImpl(
 
     override suspend fun updateTask(task: Task) {
         try {
-            apiService.updateTasks(revision = revision, tasks = listOf(task.toRequestModel()))
-            taskDao.updateTask(task.toEntity())
+            remoteDataSource.updateTasks(revision, listOf(task))
+            localDataSource.updateTask(task)
             revision += 1
         } catch (e: Exception) {
             throw IOException("Ошибка при обновлении задачи")
@@ -55,8 +54,8 @@ class TaskRepositoryImpl(
 
     override suspend fun deleteTask(taskId: Int) {
         try {
-            apiService.deleteTask(taskId)
-            taskDao.deleteTask(taskId)
+            remoteDataSource.deleteTask(taskId)
+            localDataSource.deleteTask(taskId)
             revision += 1
         } catch (e: Exception) {
             throw IOException("Ошибка при удалении задачи")

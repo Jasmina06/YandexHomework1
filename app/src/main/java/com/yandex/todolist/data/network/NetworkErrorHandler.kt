@@ -1,4 +1,3 @@
-// data/network/NetworkErrorHandler.kt
 package com.yandex.todolist.data.network
 
 import retrofit2.HttpException

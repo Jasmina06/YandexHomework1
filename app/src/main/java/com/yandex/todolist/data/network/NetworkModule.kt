@@ -1,4 +1,3 @@
-// data/network/NetworkModule.kt
 package com.yandex.todolist.data.network
 
 import android.content.Context
@@ -7,19 +6,15 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object NetworkModule {
-    private const val BASE_URL = "https://hive.mrdekk.ru/"
 
-    // Функция для предоставления ApiService
+    private const val BASE_URL = "https://hive.mrdekk.ru/"
     fun provideApiService(context: Context): ApiService {
-        val tokenProvider = DefaultTokenProvider(context)
-        val client = OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(tokenProvider))
-            .build()
+        val client = OkHttpClient.Builder().build()
 
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
             .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ApiService::class.java)
     }

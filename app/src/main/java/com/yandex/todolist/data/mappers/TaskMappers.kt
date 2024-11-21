@@ -27,7 +27,6 @@ fun Task.toEntity(): TaskEntity {
         isDone = isDone
     )
 }
-
 fun Task.toRequestModel(): TaskRequest {
     return TaskRequest(
         id = id,

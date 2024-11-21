@@ -15,11 +15,8 @@ import org.koin.androidx.compose.koinViewModel
 import androidx.compose.runtime.Composable
 
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Устанавливаем контент для MainActivity с использованием Jetpack Compose
         setContent {
             ToDoAppTheme {
                 MyApp()
@@ -31,19 +28,18 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp() {
     val navController = rememberNavController()
+    val taskViewModel: TaskViewModel = koinViewModel()
 
     NavHost(navController = navController, startDestination = "login") {
         composable("login") {
             LoginScreen(onLoginSuccess = {
                 navController.navigate("taskList") {
-                    // Удаляем `LoginScreen` из стека, чтобы пользователь не мог вернуться на него
                     popUpTo("login") { inclusive = true }
                 }
             })
         }
 
         composable("taskList") {
-            val taskViewModel: TaskViewModel = koinViewModel()
             TaskListScreen(
                 viewModel = taskViewModel,
                 onAddTask = { navController.navigate("taskEditor") },
@@ -53,7 +49,6 @@ fun MyApp() {
 
         composable("taskEditor?taskId={taskId}") { backStackEntry ->
             val taskId = backStackEntry.arguments?.getString("taskId")?.toIntOrNull()
-            val taskViewModel: TaskViewModel = koinViewModel()
             TaskEditorScreen(
                 viewModel = taskViewModel,
                 taskId = taskId,

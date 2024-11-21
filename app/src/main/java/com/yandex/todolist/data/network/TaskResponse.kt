@@ -7,6 +7,6 @@ data class TaskResponse(
     val id: Int,
     val description: String,
     val importance: Importance,
-    val deadline: Long?,  // Используем timestamp для получения даты
+    val deadline: Long?,
     val isDone: Boolean
 )
