@@ -1,8 +1,8 @@
 <resources>
     <string name="my_tasks">Мои дела</string>
     <string name="app_name">To Do List</string>
-    <string name="hide_completed">Скрыть выполненные</string>
-    <string name="show_completed">Показать выполненные</string>
+    <string name="hide_completed_tasks">Скрыть выполненные</string> <!-- Изменено -->
+    <string name="show_completed_tasks">Показать выполненные</string> <!-- Изменено -->
     <string name="completed_tasks">Выполнено — %d</string>
     <string name="new_task">Новая задача</string>
     <string name="edit_task">Редактировать задачу</string>
@@ -11,8 +11,13 @@
     <string name="cancel">Отмена</string>
     <string name="save">Сохранить</string>
     <string name="delete_task">Удалить задачу</string>
-    <string name="add_task">Добавить задание </string>
+    <string name="add_task">Добавить задание</string>
     <string name="task_description">Описание задачи</string>
 
-
+    <!-- Дополнительные строки -->
+    <string name="login_successful">Вход выполнен успешно!</string>
+    <string name="username">Имя пользователя</string>
+    <string name="password">Пароль</string>
+    <string name="error_message">Произошла ошибка. Пожалуйста, попробуйте еще раз.</string>
+    <string name="retry">Повторить</string>
 </resources>

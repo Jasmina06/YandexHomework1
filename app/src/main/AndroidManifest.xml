@@ -3,7 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.yandex.todolist">
 
+    <!-- Разрешение для доступа к интернету -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -14,6 +18,7 @@
         android:theme="@style/Theme.ToDoList"
         tools:targetApi="31">
 
+        <!-- Основная Activity приложения -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -22,6 +27,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>
