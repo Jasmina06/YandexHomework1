@@ -100,7 +100,6 @@ class TaskViewModel(
             }
         }
     }
-
     fun deleteTask(taskId: Int) {
         viewModelScope.launch {
             try {

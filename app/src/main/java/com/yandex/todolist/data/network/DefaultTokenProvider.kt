@@ -1,4 +1,3 @@
-// data/network/DefaultTokenProvider.kt
 package com.yandex.todolist.data.network
 
 import android.content.Context

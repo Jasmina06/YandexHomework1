@@ -9,7 +9,7 @@ import androidx.room.TypeConverters  // Импортируем TypeConverters
 import com.yandex.todolist.data.model.TaskEntity
 
 @Database(entities = [TaskEntity::class], version = 1)
-@TypeConverters(Converters::class)  // Добавляем TypeConverters для использования вашего класса Converters
+@TypeConverters(Converters::class)
 abstract class TaskDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao
 

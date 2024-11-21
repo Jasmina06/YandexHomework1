@@ -1,3 +1,4 @@
+
 // data/workers/PeriodicSyncWorker.kt
 package com.yandex.todolist.data.workers
 
@@ -19,11 +20,11 @@ class PeriodicSyncWorker(
     override suspend fun doWork(): Result {
         return try {
             taskRepository.getTasks().collect {
-                // обрабатываем задачи, если нужно
+
             }
             Result.success()
         } catch (e: Exception) {
-            Result.retry()  // В случае ошибки повторяем
+            Result.retry()
         }
     }
 }

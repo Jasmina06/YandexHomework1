@@ -1,4 +1,3 @@
-// Task.kt
 package com.yandex.todolist.domain.model
 
 import java.time.LocalDate
